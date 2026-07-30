@@ -1,0 +1,13 @@
+
+# Ignore local environment keys
+.env
+
+# Ignore large datasets to keep git history lightweight
+data/processed/
+*.csv
+*.xlsx
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

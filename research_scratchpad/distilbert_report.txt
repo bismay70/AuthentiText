@@ -1,0 +1,34 @@
+
+============================================================
+🏁 DISTILBERT TEST SET EVALUATION
+============================================================
+              precision    recall  f1-score   support
+
+     chatgpt       0.96      0.83      0.89        29
+      claude       0.95      0.97      0.96        38
+      gemini       0.91      1.00      0.95        29
+  groq_llama       0.93      0.96      0.95        28
+     mistral       0.92      0.88      0.90        26
+
+    accuracy                           0.93       150
+   macro avg       0.93      0.93      0.93       150
+weighted avg       0.93      0.93      0.93       150
+
+--------------------------------------------------------------
+==================================================
+ TRUE WEEK 3 ROBUSTNESS PERFORMANCE BENCHMARK
+==================================================
+ Clean Test Set Baseline Accuracy : 93.00%
+ Paraphrase Attack Accuracy      : 44.00%
+ Style Transfer Attack Accuracy   : 36.00%
+--------------------------------------------------
+ Paraphrase Margin Drop          : 49.00%
+ Style Transfer Margin Drop       : 57.00%
+==================================================
+
+==================================================
+🔍 SHAP INTERPRETABILITY CASE STUDY (CLAUDE VS. SPOOFED GPT-4O)
+==================================================
+- Original Text Analysis: The fine-tuned DistilBERT model correctly identified Claude's signature based on its concise structural layout, direct definition delivery, and characteristic em-dash (—) usage.
+- Adversarial Text Analysis: When Llama 3.1 altered the passage to spoof GPT-4o, it introduced bold title headings (**Gene Editing Unlocked**) and marketing-style modifiers ("groundbreaking", "empowering"). 
+- Conclusion: The transformer's self-attention layers latched heavily onto these highly prominent formatting tokens, shifting the classification vector completely away from Claude and tricking the engine into predicting ChatGPT.
