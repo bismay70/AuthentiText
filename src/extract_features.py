@@ -11,8 +11,8 @@ from nltk.corpus import words
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
-    import os
-    os.system("python -m spacy download en_core_web_sm")
+    from spacy.cli import download
+    download("en_core_web_sm")
     nlp = spacy.load("en_core_web_sm")
 
 encoder = SentenceTransformer('all-MiniLM-L6-v2')
