@@ -1,8 +1,16 @@
-# 🔍 AI Model Fingerprinting & Forensic Stylometry
+# 🔍 AuthentiText: AI Model Fingerprinting & Forensic Stylometry
+
+<p align="center">
+  <img src="ss/ss1.png" width="48%" alt="Live Model Fingerprinter"/>
+  <img src="ss/ss2.png" width="48%" alt="Adversarial Attack Vulnerability Logs"/>
+  <br>
+  <img src="ss/ss3.png" width="48%" alt="Dataset Boundary Constraints"/>
+  <img src="analysis_plots/confusion_matrix.png" width="48%" alt="Confusion Matrix"/>
+</p>
 
 Every Large Language Model has an invisible writing signature — shaped by its training data, alignment tuning, and RLHF process. GPT-4 hedges differently than Claude. Gemini structures arguments differently than LLaMA. These patterns are subtle, consistent, and machine-detectable.
 
-This repository implements an advanced Natural Language Processing (NLP) forensics pipeline using a fine-tuned **DistilBERT** sequence classifier to decode and capture these hidden linguistic footprints. It decouples superficial presentation layers from core stylistic syntax to ensure highly robust authorship classification.
+This repository implements **AuthentiText**, an advanced Natural Language Processing (NLP) forensics pipeline using a fine-tuned **DistilBERT** sequence classifier to decode and capture these hidden linguistic footprints. It decouples superficial presentation layers from core stylistic syntax to ensure highly robust authorship classification.
 
 ---
 
@@ -79,6 +87,8 @@ The model was rigorously validated against an untouched verification partition. 
 ### Confirmed Confusion Matrix Heatmap
 
 The true positive vs. false positive classification boundaries across all 5 LLM targets:
+
+![Confusion Matrix](analysis_plots/confusion_matrix.png)
 
 ---
 
