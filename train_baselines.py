@@ -116,19 +116,21 @@ for category_name, group in test_df.groupby('Category'):
 import joblib
 import os
 
-# Create the absolute folder destination
-os.makedirs("D:/Aiml/data/processed", exist_ok=True)
+# Create the folder destination
+base_dir = os.path.dirname(os.path.abspath(__file__))
+processed_dir = os.path.join(base_dir, "data", "processed")
+os.makedirs(processed_dir, exist_ok=True)
 
 print("\n💾 Serializing Winning Model and Feature Scaler Assets...")
 
 try:
     # 1. Save the ACTUAL winning model tracked by your loop condition
-    model_save_path = "D:/Aiml/data/processed/gradient_boosting_model.pkl"
+    model_save_path = os.path.join(processed_dir, "gradient_boosting_model.pkl")
     joblib.dump(best_clf, model_save_path)
     print(f"🎯 SUCCESS! Serialized Winner ({best_model_name.strip()}) to: {model_save_path}")
     
     # 2. Save the fitted scaler so your Streamlit app can normalize inference data perfectly!
-    scaler_save_path = "D:/Aiml/data/processed/scaler.pkl"
+    scaler_save_path = os.path.join(processed_dir, "scaler.pkl")
     joblib.dump(scaler, scaler_save_path)
     print(f"🎯 SUCCESS! Serialized Feature Scaler to: {scaler_save_path}")
 

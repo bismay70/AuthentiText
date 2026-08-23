@@ -39,21 +39,35 @@ def load_forensic_transformer():
         tokenizer = AutoTokenizer.from_pretrained(local_weights_path)
         model = AutoModelForSequenceClassification.from_pretrained(local_weights_path, num_labels=5)
         
+        missing_classifier = False
         if os.path.exists(local_head_file):
-            st.sidebar.success(" Fine-Tuned Local Head Active")
             checkpoint = torch.load(local_head_file, map_location=torch.device('cpu'))
-            model.load_state_dict(checkpoint)
-        return tokenizer, model, True
+            result = model.load_state_dict(checkpoint, strict=False)
+            if any('classifier' in key for key in result.missing_keys):
+                missing_classifier = True
+        return tokenizer, model, True, missing_classifier
     else:
         # Secure fallback for cloud sandbox environments
         print(" Local weights missing or untracked. Initializing Hugging Face Cloud Fallback...")
-        st.sidebar.warning(" Cloud Sandbox Mode: Baseline Transformer Active")
         
         fallback_model_name = "distilbert-base-uncased"
         tokenizer = AutoTokenizer.from_pretrained(fallback_model_name)
         model = AutoModelForSequenceClassification.from_pretrained(fallback_model_name, num_labels=5)
-        return tokenizer, model, True
-tokenizer, model, transformer_loaded = load_forensic_transformer()
+        return tokenizer, model, True, True
+
+tokenizer, model, transformer_loaded, missing_classifier = load_forensic_transformer()
+
+# Apply sidebar messages outside of the cached function
+_base_dir = os.path.dirname(os.path.abspath(__file__))
+_local_weights_path = os.path.join(_base_dir, "distilbert_weights")
+if os.path.exists(os.path.join(_local_weights_path, "config.json")) and os.path.exists(os.path.join(_local_weights_path, "model.safetensors")):
+    if os.path.exists(os.path.join(_local_weights_path, "custom_classification_head.pt")):
+        if missing_classifier:
+            st.sidebar.warning(" Untrained Classifier Active (Missing Keys)")
+        else:
+            st.sidebar.success(" Fine-Tuned Local Head Active")
+else:
+    st.sidebar.warning(" Cloud Sandbox Mode: Baseline Transformer Active")
 
 # --- BACKEND UTILITY: DYNAMIC FEATURE EXTRACTION ---
 def extract_stylometric_features(text):
@@ -89,9 +103,10 @@ def extract_stylometric_features(text):
 # --- LOAD LOCAL TRAINED MODEL ASSETS ---
 @st.cache_resource
 def load_forensic_models():
-    model_path = "D:/Aiml/data/processed/gradient_boosting_model.pkl"
-    vectorizer_path = "D:/Aiml/data/processed/tfidf_vectorizer.pkl"
-    scaler_path = "D:/Aiml/data/processed/scaler.pkl" # Add your scaler path here
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "data", "processed", "gradient_boosting_model.pkl")
+    vectorizer_path = os.path.join(base_dir, "data", "processed", "tfidf_vectorizer.pkl")
+    scaler_path = os.path.join(base_dir, "data", "processed", "scaler.pkl") # Add your scaler path here
     
     # Load model and scaler if they exist
     if os.path.exists(model_path) and os.path.exists(scaler_path):
@@ -162,10 +177,10 @@ with tab1:
                         transformer_probs = F.softmax(logits, dim=-1).squeeze().tolist()
                     
                     # 4. Extract explicit manual features for your baseline
-                        manual_features = extract_stylometrics(cleaned_text)
-                    
-                    # 5. Extract Tabular Probabilities via your Gradient Boosting Asset
+                    # Deferred to only execute if models are loaded to avoid unneeded dependency failures
                     if models_loaded:
+                        manual_features = extract_stylometrics(cleaned_text)
+                        
                         # Use gb_model directly as loaded at the top of your file
                         manual_features_scaled = feature_scaler.transform(manual_features)
                         baseline_probs = gb_model.predict_proba(manual_features_scaled)[0].tolist()
@@ -181,9 +196,8 @@ with tab1:
                     else:
                         # Fallback to pure transformer output if local pkl files are missing
                         probabilities = transformer_probs
-                    
                 else:
-                    st.error("Critical Error: Could not locate configuration files inside `D:/Aiml/distilbert_weights/`.")
+                    st.error("Critical Error: Could not load the transformer model.")
                     st.stop()
 
                 # --- CODE ESCAPE: Out of the else block, executing at successful run-time ---

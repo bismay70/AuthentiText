@@ -11,3 +11,10 @@ data/processed/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+interview_prep.md
+
+# Ignore reorganized markdown files
+s.md
+bny.md
+Det.md
+Int.md
